@@ -8,6 +8,7 @@ import random
 import time
 import os
 import sys
+from fake_useragent import UserAgent
 
 from scrapy.http import HtmlResponse
 from selenium import webdriver
@@ -128,16 +129,33 @@ class SouDownloaderMiddleware:
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class ProxyMiddleware:
+class RandomUserAgentMiddlware(object):
+    # 随机更换user-agent
+    def __init__(self, crawler):
+        super(RandomUserAgentMiddlware, self).__init__()
+        self.ua = UserAgent()
+        self.ua_type = crawler.settings.get("RANDOM_UA_TYPE", "random")
 
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_request(self, request, spider):
+        def get_ua():
+            return getattr(self.ua, self.ua_type)  # 相当于 self.ua.random()
+
+        request.headers.setdefault('User-Agent', get_ua())
+
+class ProxyMiddleware:
     def process_request(self, request, spider):
         # proxy = random.choice(settings["PROXIES"])
         # request.meta["proxy"] = proxy
-        headers = {'User-Agent':str(UserAgent().random)}
+        headers = {'User-Agent': str(UserAgent().random)}
         if spider.name == "shij":
-            request.headers=headers
+            request.headers = headers
 
         print("代理设置成功")
+
 
 
 class UAMiddleware:

@@ -12,6 +12,7 @@ from pymongo import *
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.exporters import JsonItemExporter
 import pymysql
+import pymongo
 from twisted.enterprise import adbapi
 import pymysql.cursors
 from models.es_types import ShijType
@@ -38,8 +39,6 @@ class SouPipeline:
 
     def close_spider(self, spider):
         self.file.close()
-
-
 
 
 class SouPipelineD:
@@ -185,3 +184,30 @@ class ElasticsearchPipline(object):
         item.save_to_es()
 
         return item
+
+
+class MongodbPipline(object):
+
+    def __init__(self):
+        self.client = pymongo.MongoClient("localhost",27017)
+        self.db = self.client.zhihu
+        self.content = self.db.questions
+
+
+    def process_item(self,item,spider):
+
+        if spider.name == "zhihu":
+            print(type(item))
+            # item = {"name":"zhangsan"}
+            # self.content.insert_one(item)
+            #插入的数据需要时dict 或 json
+            print(item.items())
+            print(dict(item))
+            self.content.insert_one(dict(item)).inserted_id
+
+
+
+if __name__ == "__main__":
+
+    mondo = MongodbPipline()
+    mondo.process_item("action","zhihu")

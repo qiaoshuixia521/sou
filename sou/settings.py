@@ -58,7 +58,7 @@ ROBOTSTXT_OBEY = False
 DOWNLOADER_MIDDLEWARES = {
    # 'sou.middlewares.SouDownloaderMiddleware': 543,
    # 'sou.middlewares.ProxyMiddleware':544
-   "sou.middlewares.SelenimuMiddleware":545,
+   # "sou.middlewares.SelenimuMiddleware":545,
 }
 
 # Enable or disable extensions
